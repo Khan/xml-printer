@@ -32,7 +32,7 @@ const isSomething = x =>
 export const escapeXmlText = (text) => {
     if (isSomething(text)) {
         const str = String(text);
-        return (/[&<>]/).test(str)
+        return (/[&<>'"]/).test(str)
             ? `<![CDATA[${str.replace(/]]>/, ']]]]><![CDATA[>')}]]>`
             : str;
     }
