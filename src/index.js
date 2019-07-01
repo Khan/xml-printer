@@ -32,7 +32,7 @@ const isSomething = x =>
 export const escapeXmlText = (text) => {
     if (isSomething(text)) {
         const str = String(text);
-        return (/[&<>]/).test(str)
+        return (/[&<>'"]/).test(str)
             ? `<![CDATA[${str.replace(/]]>/, ']]]]><![CDATA[>')}]]>`
             : str;
     }
@@ -74,9 +74,18 @@ const print = (ast, options = {}) => {
         escapeAttributes = true,
         escapeText = true,
         selfClose = true,
+        indent = 0,
+        currentIndent = indent,
         quote = '"',
     } = options;
     if (Array.isArray(ast)) {
+        if (indent) {
+            const allElements = ast.every(node => node.type === 'element');
+            const whiteSpace = new Array(currentIndent + 1).join(' ');
+            if (allElements) {
+                return ast.map((ast) => '\n' + whiteSpace + print(ast, {...options, currentIndent: indent + currentIndent})).join('') + '\n';
+            }
+        }
         return ast.map((ast) => print(ast, options)).join('');
     }
     if (ast.type === 'text') {
